@@ -43,6 +43,8 @@
 
   - name: Apply JBoss Configuration
     copy: src=configuration/standalone.conf dest="{{jboss_path}}/jboss-eap-7.0/bin/standalone.conf"
+   
+  - name: Deploy modules
     copy: src=modules/  dest="{{jboss_path}}/jboss-eap-7.0/modules"
 
   - name: MySQL connection configuration
