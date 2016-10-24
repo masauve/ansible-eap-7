@@ -13,6 +13,14 @@
   - jboss_admin_user: jboss
   - jboss_admin_password: jboss!123
 
+  # MySQL configuration
+  - DB_USER: ticket
+  - DB_PASSWORD: Test!123
+  - DB_HOST: localhost
+  - DB_PORT: 3306
+  - DB_NAME: ticketmonster
+
+
   tasks:
   - name: Install Java 1.8 and dependencies
     yum: name={{item}} state=present
@@ -35,12 +43,16 @@
 
   - name: Apply JBoss Configuration
     copy: src=configuration/standalone.conf dest="{{jboss_path}}/jboss-eap-7.0/bin/standalone.conf"
+    copy: src=modules/  dest="{{jboss_path}}/jboss-eap-7.0/modules"
+
+  - name: MySQL connection configuration
+    template: src=templates/standalone.j2 dest="{{jboss_path}}/jboss-eap-7.0/standalone/configuration/standalone.xml"
 
   - name: Change ownership of JBoss installation
     file: path="{{jboss_path}}/jboss-eap-7.0" owner={{jboss_user}} group={{jboss_group}} state=directory recurse=yes
 
   - name: Deploy application
-    copy: src=deployments/ROOT.war dest="{{jboss_path}}/jboss-eap-7.0/standalone/deployments/"
+    copy: src=deployments/ticket-monster.war dest="{{jboss_path}}/jboss-eap-7.0/standalone/deployments/"
 
   handlers:
   - name: create jboss_admin
