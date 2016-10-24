@@ -1,0 +1,47 @@
+---
+- hosts: all
+  become: yes
+  vars:
+  # where to install jboss
+  - jboss_path: /usr/share
+
+  # jboss linux user and group
+  - jboss_user: jboss
+  - jboss_group: jboss
+
+  # jboss eap administrator user and password
+  - jboss_admin_user: jboss
+  - jboss_admin_password: jboss!123
+
+  tasks:
+  - name: Install Java 1.8 and dependencies
+    yum: name={{item}} state=present
+    with_items:
+      - unzip
+      - java-1.8.0-openjdk
+      - libselinux-python
+      - libsemanage-python
+
+  - name: Extract JBoss EAP 7.0 archive
+    unarchive: src=install/jboss-eap-7.0.0.zip dest={{jboss_path}} copy=yes
+    notify:
+      - create jboss_admin
+
+  - name: Add group "{{jboss_group}}"
+    group: name={{jboss_group}}
+
+  - name: Add user "{{jboss_user}}"
+    user: name={{jboss_user}} group={{jboss_group}} home={{jboss_path}}/jboss-eap-7.0
+
+  - name: Apply JBoss Configuration
+    copy: src=configuration/standalone.conf dest="{{jboss_path}}/jboss-eap-7.0/bin/standalone.conf"
+
+  - name: Change ownership of JBoss installation
+    file: path="{{jboss_path}}/jboss-eap-7.0" owner={{jboss_user}} group={{jboss_group}} state=directory recurse=yes
+
+  - name: Deploy application
+    copy: src=deployments/ROOT.war dest="{{jboss_path}}/jboss-eap-7.0/standalone/deployments/"
+
+  handlers:
+  - name: create jboss_admin
+    shell: "{{jboss_path}}/jboss-eap-7.0/bin/add-user.sh -u '{{jboss_admin_user}}' -p '{{jboss_admin_password}}'"
