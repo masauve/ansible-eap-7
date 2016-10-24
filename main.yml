@@ -8,6 +8,8 @@
   # jboss linux user and group
   - jboss_user: jboss
   - jboss_group: jboss
+  - jboss_version: jboss-eap-6.4
+  - jboss_file: jboss-eap-6.4.0.zip
 
   # jboss eap administrator user and password
   - jboss_admin_user: jboss
@@ -30,8 +32,8 @@
       - libselinux-python
       - libsemanage-python
 
-  - name: Extract JBoss EAP 7.0 archive
-    unarchive: src=install/jboss-eap-7.0.0.zip dest={{jboss_path}} copy=yes
+  - name: Extract JBoss EAP archive
+    unarchive: src=install/{{jboss_file}} dest={{jboss_path}} copy=yes
     notify:
       - create jboss_admin
 
@@ -39,23 +41,23 @@
     group: name={{jboss_group}}
 
   - name: Add user "{{jboss_user}}"
-    user: name={{jboss_user}} group={{jboss_group}} home={{jboss_path}}/jboss-eap-7.0
+    user: name={{jboss_user}} group={{jboss_group}} home={{jboss_path}}/{{jboss_version}}
 
   - name: Apply JBoss Configuration
-    copy: src=configuration/standalone.conf dest="{{jboss_path}}/jboss-eap-7.0/bin/standalone.conf"
-   
+    copy: src=configuration/standalone.conf dest="{{jboss_path}}/{{jboss_version}}/bin/standalone.conf"
+
   - name: Deploy modules
-    copy: src=modules/  dest="{{jboss_path}}/jboss-eap-7.0/modules"
+    copy: src=modules/  dest="{{jboss_path}}/{{jboss_version}}/modules"
 
   - name: MySQL connection configuration
-    template: src=templates/standalone.j2 dest="{{jboss_path}}/jboss-eap-7.0/standalone/configuration/standalone.xml"
+    template: src=templates/standalone.j2 dest="{{jboss_path}}/{{jboss_version}}/standalone/configuration/standalone.xml"
 
   - name: Change ownership of JBoss installation
-    file: path="{{jboss_path}}/jboss-eap-7.0" owner={{jboss_user}} group={{jboss_group}} state=directory recurse=yes
+    file: path="{{jboss_path}}/{{jboss_version}}" owner={{jboss_user}} group={{jboss_group}} state=directory recurse=yes
 
   - name: Deploy application
-    copy: src=deployments/ticket-monster.war dest="{{jboss_path}}/jboss-eap-7.0/standalone/deployments/"
+    copy: src=deployments/ticket-monster.war dest="{{jboss_path}}/{{jboss_version}}/standalone/deployments/"
 
   handlers:
   - name: create jboss_admin
-    shell: "{{jboss_path}}/jboss-eap-7.0/bin/add-user.sh -u '{{jboss_admin_user}}' -p '{{jboss_admin_password}}'"
+    shell: "{{jboss_path}}/{{jboss_version}}/bin/add-user.sh -u '{{jboss_admin_user}}' -p '{{jboss_admin_password}}'"

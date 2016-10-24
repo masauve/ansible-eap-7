@@ -1,7 +1,7 @@
 ANSIBLE PLAYBOOK TO INSTALL JBOSS EAP AND DEPLOY APPLICATION
 
 Prerequisites:
-- Download JBOSS EAP 7.0 from Red Hat customer portal and copy the zip under the install directory
+- Download JBOSS EAP 6.4 from Red Hat customer portal and copy the zip under the install directory
 - Update the JBOSS EAP configuration in configuration/standalone.conf if requires (memory utilization and other params)
 - create inventory file - only a template is provided
 - Update main.yml variables for your installation (path, user and groups)
