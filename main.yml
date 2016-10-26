@@ -35,7 +35,7 @@
   - name: Extract JBoss EAP archive
     unarchive: src=install/{{jboss_file}} dest={{jboss_path}} copy=yes
     notify:
-      - create jboss_admin
+    - create jboss_admin
 
   - name: Add group "{{jboss_group}}"
     group: name={{jboss_group}}
@@ -57,6 +57,20 @@
 
   - name: Deploy application
     copy: src=deployments/ticket-monster.war dest="{{jboss_path}}/{{jboss_version}}/standalone/deployments/"
+
+#### CREATE AND START SERVICE
+
+  - name: Create service configuration directory
+    file: path=/etc/jboss-as state=directory
+
+  - name: Copy the service confiugration file
+    copy: src=configuration/jboss-as.conf dest=/etc/jboss-as
+
+  - name: Copy the init script
+    copy: src=configuration/jboss-as-standalone.sh dest=/etc/init.d/jboss-as-standalone.sh mode=0755
+
+  - name: Enable JBoss to be started at boot
+    service: name=jboss-as-standalone enabled=yes state=started
 
   handlers:
   - name: create jboss_admin
