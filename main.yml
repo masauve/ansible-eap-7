@@ -67,7 +67,7 @@
     copy: src=configuration/jboss-as.conf dest=/etc/jboss-as
 
   - name: Copy the init script
-    copy: src=configuration/jboss-as-standalone.sh dest=/etc/init.d/jboss-as-standalone.sh mode=0755
+    copy: src=configuration/jboss-as-standalone.sh dest=/etc/init.d/jboss-as-standalone mode=0755
 
   - name: Enable JBoss to be started at boot
     service: name=jboss-as-standalone enabled=yes state=started
